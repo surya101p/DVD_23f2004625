@@ -419,6 +419,11 @@ with delivery_tab:
 
     with col2:
 
+        df["delivery_status"] = df["is_late"].map({
+            0: "On Time",
+            1: "Late"
+        })
+
         negative_delivery = (
             df.groupby("delivery_status", as_index=False)
             .agg(

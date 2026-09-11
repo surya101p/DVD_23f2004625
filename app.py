@@ -420,7 +420,13 @@ with delivery_tab:
     with col2:
 
         delay_rating = (
-            df.groupby("delivery_delay_days", as_index=False)
+            df[
+                df["delivery_delay_days"].between(
+                    df["delivery_delay_days"].quantile(0.01),
+                    df["delivery_delay_days"].quantile(0.99)
+                )
+            ]
+            .groupby("delivery_delay_days", as_index=False)
             .agg(
                 average_rating=("review_score", "mean"),
                 orders=("review_score", "count")

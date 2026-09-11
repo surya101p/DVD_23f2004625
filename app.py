@@ -419,35 +419,38 @@ with delivery_tab:
 
     with col2:
 
-        delay_rating = (
-            df[
-                df["delivery_delay_days"].between(
-                    df["delivery_delay_days"].quantile(0.01),
-                    df["delivery_delay_days"].quantile(0.99)
-                )
-            ]
-            .groupby("delivery_delay_days", as_index=False)
+        negative_delivery = (
+            df.groupby("delivery_status", as_index=False)
             .agg(
-                average_rating=("review_score", "mean"),
-                orders=("review_score", "count")
+                negative_review_rate=(
+                    "is_negative_review",
+                    "mean"
+                )
             )
         )
 
-        delay_rating["average_rating"] = (
-            delay_rating["average_rating"].round(2)
+        negative_delivery["negative_review_rate"] = (
+            negative_delivery["negative_review_rate"]
+            .mul(100)
+            .round(2)
         )
 
-        fig = px.scatter(
-            delay_rating,
-            x="delivery_delay_days",
-            y="average_rating",
-            size="orders"
+        fig = px.bar(
+            negative_delivery,
+            x="delivery_status",
+            y="negative_review_rate",
+            text="negative_review_rate"
+        )
+
+        fig.update_traces(
+            texttemplate="%{text:.2f}%",
+            textposition="outside"
         )
 
         fig.update_layout(
             height=380,
-            xaxis_title="Delivery Delay (Days)",
-            yaxis_title="Average Rating"
+            xaxis_title="",
+            yaxis_title="Negative Review Rate (%)"
         )
 
         st.plotly_chart(

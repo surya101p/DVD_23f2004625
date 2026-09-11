@@ -305,6 +305,10 @@ with category_tab:
         ascending=False
     )
 
+    display["revenue"] = display["revenue"].round(2)
+    display["average_rating"] = display["average_rating"].round(2)
+    display["negative_rate"] = display["negative_rate"].round(2)
+
     st.dataframe(
         display,
         width="stretch",

@@ -435,8 +435,7 @@ with delivery_tab:
             delay_rating,
             x="delivery_delay_days",
             y="average_rating",
-            size="orders",
-            trendline="ols"
+            size="orders"
         )
 
         fig.update_layout(

@@ -557,6 +557,11 @@ with seller_tab:
 
     st.subheader("Seller Performance")
 
+    seller["average_rating"] = seller["average_rating"].round(2)
+    seller["negative_rate"] = seller["negative_rate"].round(2)
+    seller["late_rate"] = seller["late_rate"].round(2)
+    seller["avg_delay_days"] = seller["avg_delay_days"].round(2)
+
     col1, col2 = st.columns(2)
 
     with col1:

@@ -328,6 +328,8 @@ with delivery_tab:
 
     with col1:
 
+        delivery["average_rating"] = delivery["average_rating"].round(2)
+
         fig = px.bar(
             delivery,
             x="delivery_status",
@@ -362,6 +364,8 @@ with delivery_tab:
                 )
             )
         )
+
+        score_delivery["average_delay"] = score_delivery["average_delay"].round(2)
 
         fig = px.bar(
             score_delivery,
@@ -415,16 +419,30 @@ with delivery_tab:
 
     with col2:
 
-        fig = px.histogram(
-            delivered,
-            x="delivery_days",
-            nbins=40
+        delay_rating = (
+            df.groupby("delivery_delay_days", as_index=False)
+            .agg(
+                average_rating=("review_score", "mean"),
+                orders=("review_score", "count")
+            )
+        )
+
+        delay_rating["average_rating"] = (
+            delay_rating["average_rating"].round(2)
+        )
+
+        fig = px.scatter(
+            delay_rating,
+            x="delivery_delay_days",
+            y="average_rating",
+            size="orders",
+            trendline="ols"
         )
 
         fig.update_layout(
-            height=350,
-            xaxis_title="Delivery Days",
-            yaxis_title="Orders"
+            height=380,
+            xaxis_title="Delivery Delay (Days)",
+            yaxis_title="Average Rating"
         )
 
         st.plotly_chart(

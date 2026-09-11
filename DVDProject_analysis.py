@@ -132,6 +132,8 @@ for col in order_date_columns:
             orders[col],
             errors="coerce"
         )
+
+
 # Convert review dates
 review_date_columns = [
     "review_creation_date",
@@ -146,6 +148,7 @@ for col in review_date_columns:
             reviews[col],
             errors="coerce"
         )
+
 
 # Marketing dates
 if "first_contact_date" in mql.columns:
@@ -162,6 +165,7 @@ if "won_date" in closed_deals.columns:
         closed_deals["won_date"],
         errors="coerce"
     )
+
 
 # Clean reviews
 if "review_comment_title" in reviews.columns:
@@ -180,14 +184,19 @@ if "review_comment_message" in reviews.columns:
     )
 
 
-reviews["is_negative_review"] = (
-    reviews["review_score"] <= 2
-).astype(int)
+reviews["is_negative_review"] = np.where(
+    reviews["review_score"].isna(),
+    np.nan,
+    (reviews["review_score"] <= 2).astype(int)
+)
 
 
-reviews["is_one_star"] = (
-    reviews["review_score"] == 1
-).astype(int)
+reviews["is_one_star"] = np.where(
+    reviews["review_score"].isna(),
+    np.nan,
+    (reviews["review_score"] == 1).astype(int)
+)
+
 
 # Clean products
 if "product_category_name" in products.columns:
@@ -213,6 +222,7 @@ for col in dimension_columns:
             products[col].median()
         )
 
+
 # Category translation
 if (
     "product_category_name" in products.columns
@@ -232,6 +242,7 @@ if (
             .fillna("unknown")
         )
 
+
 # Marketing data
 if "origin" in mql.columns:
 
@@ -239,6 +250,7 @@ if "origin" in mql.columns:
         mql["origin"]
         .fillna("Unknown")
     )
+
 
 # Closed deals
 closed_deal_categorical = [
@@ -256,6 +268,7 @@ for col in closed_deal_categorical:
             closed_deals[col]
             .fillna("Unknown")
         )
+
 
 # Geolocation
 if "geolocation_state" in geolocation.columns:
@@ -292,10 +305,13 @@ delivered_orders = orders[
 
 delivered_orders = delivered_orders.dropna(
     subset=[
+        "order_purchase_timestamp",
         "order_delivered_carrier_date",
-        "order_delivered_customer_date"
+        "order_delivered_customer_date",
+        "order_estimated_delivery_date"
     ]
 )
+
 
 # Delivery metrics
 delivered_orders["seller_handling_days"] = (
@@ -333,6 +349,7 @@ delivered_orders["is_late"] = (
     delivered_orders["delivery_delay_days"] > 0
 ).astype(int)
 
+
 # Delivery category
 def delivery_category(days):
 
@@ -353,6 +370,7 @@ delivered_orders["delivery_performance"] = (
     delivered_orders["delivery_delay_days"]
     .apply(delivery_category)
 )
+
 
 # Remove invalid delivery values
 delivered_orders = delivered_orders[

@@ -113,7 +113,7 @@ delivered_orders = df[
 
 revenue = df["order_value"].sum()
 
-customers = df["customer_unique_id"].nunique()
+customers = df["customer_unique_id"].count() #.nunique()
 
 rating = df["review_score"].mean()
 

@@ -105,7 +105,7 @@ st.caption(
 # KPI
 # ============================================================
 
-total_orders = df["order_id"].nunique()
+total_orders = df["order_id"].count() #nunique()
 
 delivered_orders = df[
     df["order_status"] == "delivered"
